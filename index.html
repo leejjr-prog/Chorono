@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100d1c"><title>Chrono — Time, beautifully.</title>
+<style>
+:root{color-scheme:dark;--bg:#100d1c;--panel:#1c1730;--line:#39304f;--lav:#c7a9ff;--muted:#a69bbd}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#33234e 0%,var(--bg) 58%);color:#f7f1ff;font:16px Inter,system-ui,sans-serif;display:grid;place-items:center;padding:24px}
+main{width:min(760px,100%);text-align:center}.brand{letter-spacing:.32em;text-transform:uppercase;color:var(--lav);font-size:12px;font-weight:700}.date{color:var(--muted);margin:28px 0 8px}.clock{font-size:clamp(64px,14vw,124px);font-weight:250;letter-spacing:-.075em;font-variant-numeric:tabular-nums;line-height:1.1}.clock span{color:var(--lav)}.zone{color:var(--muted);font-size:13px;letter-spacing:.16em;margin-top:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:42px 0 24px}.stat,.controls{background:#ffffff08;border:1px solid var(--line);border-radius:18px;padding:20px}.stat strong{display:block;font-size:24px;font-weight:500}.stat small{color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+.controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}button{border:1px solid var(--line);background:var(--panel);color:#eee5ff;border-radius:999px;padding:11px 17px;cursor:pointer}button:hover,button.active{background:#45345f;border-color:var(--lav)}footer{margin-top:26px;color:#776b8d;font-size:12px}
+@media(max-width:520px){.stats{gap:7px}.stat{padding:14px 5px}.stat strong{font-size:19px}.controls{padding:14px 8px}}
+</style></head>
+<body><main><div class="brand">✦ CHRONO</div><div class="date" id="date">Loading date…</div><div class="clock" id="clock">00:00<span>:00</span></div><div class="zone" id="zone">LOCAL TIME</div>
+<section class="stats"><div class="stat"><strong id="weekday">—</strong><small>Day</small></div><div class="stat"><strong id="yearDay">—</strong><small>Day of year</small></div><div class="stat"><strong id="year">—</strong><small>Year</small></div></section>
+<div class="controls"><button id="format">12-hour time</button><button id="seconds" class="active">Hide seconds</button><button id="copy">Copy time</button><button id="full">Fullscreen</button></div><footer>Every second is a new beginning.</footer></main>
+<script>
+let is24=false,showSeconds=true;const $=id=>document.getElementById(id);
+function tick(){const d=new Date();$('date').textContent=d.toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});$('weekday').textContent=d.toLocaleDateString(undefined,{weekday:'long'});$('year').textContent=d.getFullYear();const start=new Date(d.getFullYear(),0,0);$('yearDay').textContent=Math.floor((d-start)/86400000);let h=d.getHours(),suffix='';if(!is24){suffix=h>=12?' PM':' AM';h=h%12||12}const hh=String(h).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0'),ss=String(d.getSeconds()).padStart(2,'0');$('clock').innerHTML=hh+':'+mm+(showSeconds?'<span>:'+ss+'</span>':'')+(suffix?'<span style="font-size:.25em;letter-spacing:0;margin-left:12px">'+suffix+'</span>':'');$('zone').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone+' · LOCAL TIME'}
+$('format').onclick=()=>{is24=!is24;$('format').textContent=is24?'24-hour time':'12-hour time';tick()};$('seconds').onclick=()=>{showSeconds=!showSeconds;$('seconds').textContent=showSeconds?'Hide seconds':'Show seconds';$('seconds').classList.toggle('active',showSeconds);tick()};$('copy').onclick=async()=>{await navigator.clipboard.writeText(new Date().toLocaleTimeString());$('copy').textContent='Copied!';setTimeout(()=>$('copy').textContent='Copy time',1200)};$('full').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};tick();setInterval(tick,250);
+</script></body></html>
